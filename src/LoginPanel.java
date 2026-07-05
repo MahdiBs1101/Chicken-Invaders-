@@ -57,6 +57,7 @@ public class LoginPanel extends JPanel {
             if (dbManager.validateLogin(user, pass)) {
                 JOptionPane.showMessageDialog(this,
                         "Login Successful! Welcome " + user, "Success", JOptionPane.INFORMATION_MESSAGE);
+                gameMain.switchPanel("MainMenu");
             } else {
                 JOptionPane.showMessageDialog(this,
                         "Invalid username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);

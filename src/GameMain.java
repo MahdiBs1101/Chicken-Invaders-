@@ -19,6 +19,9 @@ public class GameMain {
         LoginPanel loginPanel = new LoginPanel(this);
         cardPanel.add(loginPanel, "Login");
 
+        MainMenu mainMenu = new MainMenu(this);
+        cardPanel.add(mainMenu, "MainMenu");
+
         frame.add(cardPanel);
         frame.setVisible(true);
     }
