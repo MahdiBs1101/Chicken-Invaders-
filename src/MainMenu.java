@@ -24,11 +24,12 @@ public class MainMenu extends JPanel {
         add(Box.createVerticalStrut(100));
 
         JLabel titleLabel = new JLabel("Main Menu");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 36));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 40));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        titleLabel.setForeground(Color.WHITE);
         add(titleLabel);
 
-        add(Box.createVerticalStrut(60));
+        add(Box.createVerticalStrut(100));
 
         JButton newGameButton = new JButton("New Game");
         JButton settingsButton = new JButton("Settings");
@@ -39,7 +40,11 @@ public class MainMenu extends JPanel {
         for (JButton btn : buttons) {
             btn.setMaximumSize(buttonSize);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btn.setFont(new Font("Arial", Font.PLAIN, 18));
+            btn.setFont(new Font("Arial", Font.BOLD, 30));
+            btn.setContentAreaFilled(false);
+            btn.setFocusPainted(false);
+            btn.setBorderPainted(false);
+            btn.setForeground(Color.WHITE);
         }
 
         add(newGameButton);
