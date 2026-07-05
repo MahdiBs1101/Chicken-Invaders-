@@ -21,6 +21,12 @@ public class DatabaseManager {
         return dataBase;
     }
 
+
+    private Connection connect() throws SQLException {
+        return DriverManager.getConnection(dbPath);
+    }
+
+
     private void createTables() {
         String usersTableSQL = """
                 CREATE TABLE IF NOT EXISTS Users (
@@ -54,4 +60,38 @@ public class DatabaseManager {
         }
     }
 
+    public boolean registerUser(String username, String password) {
+        String sql = "INSERT INTO users(username, password) VALUES(?, ?)";
+
+        try (Connection conn = connect();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setString(1, username);
+            st.setString(2, password);
+            st.executeUpdate();
+            return true;
+
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+
+    public boolean validateLogin(String username, String password) {
+        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setString(1, username);
+            st.setString(2, password);
+            ResultSet rs = st.executeQuery();
+
+            return rs.next();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
 }

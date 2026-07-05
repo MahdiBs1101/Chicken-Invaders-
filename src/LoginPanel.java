@@ -42,12 +42,46 @@ public class LoginPanel extends JPanel {
         add(buttonPanel);
 
 
+        DatabaseManager dbManager = DatabaseManager.db();
+
         loginButton.addActionListener(e -> {
-            System.out.println("Login attempt: " + usernameField.getText());
+            String user = usernameField.getText().trim();
+            String pass = new String(passwordField.getPassword()).trim();
+
+            if (user.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Please fill in all fields!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (dbManager.validateLogin(user, pass)) {
+                JOptionPane.showMessageDialog(this,
+                        "Login Successful! Welcome " + user, "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid username or password!", "Login Failed", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
         registerButton.addActionListener(e -> {
-            System.out.println("Register attempt: " + usernameField.getText());
+            String user = usernameField.getText().trim();
+            String pass = new String(passwordField.getPassword()).trim();
+
+            if (user.isEmpty() || pass.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Please fill in all fields!", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (dbManager.registerUser(user, pass)) {
+                JOptionPane.showMessageDialog(this,
+                        "Registration Successful! You can now login.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Username already exists or database error!",
+                        "Registration Failed", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }
