@@ -16,6 +16,9 @@ public class GameMain {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
+        LoginPanel loginPanel = new LoginPanel(this);
+        cardPanel.add(loginPanel, "Login");
+
         frame.add(cardPanel);
         frame.setVisible(true);
     }
