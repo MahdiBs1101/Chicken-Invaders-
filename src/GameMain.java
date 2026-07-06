@@ -22,6 +22,9 @@ public class GameMain {
         MainMenu mainMenu = new MainMenu(this);
         cardPanel.add(mainMenu, "MainMenu");
 
+        GamePanel gamePanel = new GamePanel(this);
+        cardPanel.add(gamePanel, "GamePanel");
+
         frame.add(cardPanel);
         frame.setVisible(true);
     }

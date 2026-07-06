@@ -54,7 +54,7 @@ public class MainMenu extends JPanel {
         add(exitButton);
 
         newGameButton.addActionListener(e -> {
-            System.out.println("Start Game!");
+            gameMain.switchPanel("GamePanel");
         });
 
         settingsButton.addActionListener(e -> {
