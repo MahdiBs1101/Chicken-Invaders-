@@ -12,21 +12,18 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
     private GameMain gameMain;
     private Image backgroundImage;
-    private Image airplaneImage;
-
-    private int airplaneX = 375;
-    private int airplaneY = 500;
-
-    private boolean up, down, left, right;
+    private Plane plane;
+    private boolean up, down, left, right, shooting;
 
     public GamePanel(GameMain gameMain) {
         this.gameMain = gameMain;
         try {
             backgroundImage = ImageIO.read(new File("assets/background/background.jpg"));
-            airplaneImage = ImageIO.read(new File("assets/airplan/1.png"));
         } catch (IOException e) {
             System.out.println("Error loading image: " + e.getMessage());
         }
+
+        plane = new DefaultPlane(375, 500);
 
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -50,41 +47,44 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
 
-        if (airplaneImage != null) {
-            g.drawImage(airplaneImage, airplaneX, airplaneY, 50, 50, this);
-        }
+        plane.draw(g);
 
         g.setColor(Color.WHITE);
-        g.drawString("Chicken Invaders Engine is Running!", 300, 300);
+        g.drawString("Lives: " + plane.getLives() + "   Bullets: " + plane.getBulletCount(), 20, 20);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if (left && airplaneX > 0) airplaneX -= 7;
-        if (right && airplaneX < getWidth() - 50) airplaneX += 7;
-        if (up && airplaneY > 0) airplaneY -= 7;
-        if (down && airplaneY < getHeight() - 50) airplaneY += 7;
+        if (left)  plane.moveLeft(getWidth());
+        if (right) plane.moveRight(getWidth());
+        if (up)    plane.moveUp(getHeight());
+        if (down)  plane.moveDown(getHeight());
+        if (shooting) plane.shoot();
+
+        plane.update(getHeight());
 
         repaint();
     }
 
     @Override
-    public void keyPressed(java.awt.event.KeyEvent e) {
+    public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        if (key == KeyEvent.VK_A) left = true;
-        if (key == KeyEvent.VK_D) right = true;
-        if (key == KeyEvent.VK_W) up = true;
-        if (key == KeyEvent.VK_S) down = true;
+        if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) left = true;
+        if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) right = true;
+        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) up = true;
+        if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) down = true;
+        if (key == KeyEvent.VK_SPACE) shooting = true;
     }
 
     @Override
-    public void keyReleased(java.awt.event.KeyEvent e) {
+    public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
-        if (key == KeyEvent.VK_A) left = false;
-        if (key == KeyEvent.VK_D) right = false;
-        if (key == KeyEvent.VK_W) up = false;
-        if (key == KeyEvent.VK_S) down = false;
+        if (key == KeyEvent.VK_A || key == KeyEvent.VK_LEFT) left = false;
+        if (key == KeyEvent.VK_D || key == KeyEvent.VK_RIGHT) right = false;
+        if (key == KeyEvent.VK_W || key == KeyEvent.VK_UP) up = false;
+        if (key == KeyEvent.VK_S || key == KeyEvent.VK_DOWN) down = false;
+        if (key == KeyEvent.VK_SPACE) shooting = false;
     }
     @Override
     public void keyTyped(java.awt.event.KeyEvent e) {}
