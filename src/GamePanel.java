@@ -13,6 +13,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private GameMain gameMain;
     private Image backgroundImage;
     private Plane plane;
+    private Grid grid;
     private boolean up, down, left, right, shooting;
 
     public GamePanel(GameMain gameMain) {
@@ -24,6 +25,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
 
         plane = new DefaultPlane(375, 500);
+        grid = new Grid(50, 50, 1.0, 20, 2, 800);
+
 
         this.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -48,9 +51,14 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
 
         plane.draw(g);
+        grid.draw(g);
 
         g.setColor(Color.WHITE);
         g.drawString("Lives: " + plane.getLives() + "   Bullets: " + plane.getBulletCount(), 20, 20);
+
+        if (grid.isStageComplete()) {
+            g.drawString("Complete!", 350, 300);
+        }
     }
 
     @Override
@@ -63,8 +71,24 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         if (shooting) plane.shoot();
 
         plane.update(getHeight());
+        grid.update();
+
+        checkBulletEnemyCollisions();
 
         repaint();
+    }
+
+    private void checkBulletEnemyCollisions() {
+        for (Bullet b : plane.getBullets()) {
+            if (!b.isActive()) continue;
+            for (Enemy en : grid.getAllEnemies()) {
+                if (b.getBounds().intersects(en.getBounds())) {
+                    en.takeHit();
+                    b.deactivate();
+                    break;
+                }
+            }
+        }
     }
 
     @Override
