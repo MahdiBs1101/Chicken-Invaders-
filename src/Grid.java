@@ -16,13 +16,18 @@ public class Grid {
     private int verticalStep;
     private int panelWidth;
 
+    private List<Egg> eggs = new ArrayList<>();
+    private long eggIntervalMs;
+    private long lastEggTime = 0;
+
     public Grid(int startX, int startY, double horizontalSpeed, int verticalStep,
-                int initialHitsPerCell, int panelWidth) {
+                int initialHitsPerCell, int panelWidth, long eggIntervalMs) {
         this.gridX = startX;
         this.gridY = startY;
         this.horizontalSpeed = horizontalSpeed;
         this.verticalStep = verticalStep;
         this.panelWidth = panelWidth;
+        this.eggIntervalMs = eggIntervalMs;
 
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
@@ -33,7 +38,7 @@ public class Grid {
         }
     }
 
-    public void update() {
+    public void update(int panelHeight) {
         gridX += direction * horizontalSpeed;
         if (gridX <= 0 || gridX + (COLS - 1) * SPACING_X + 40 >= panelWidth) {
             direction *= -1;
@@ -57,6 +62,22 @@ public class Grid {
                 }
             }
         }
+
+        layEggIfDue();
+        eggs.forEach(Egg::update);
+        eggs.removeIf(egg -> !egg.isActive() || egg.isOffScreen(panelHeight));
+    }
+
+    private void layEggIfDue() {
+        long now = System.currentTimeMillis();
+        if (now - lastEggTime < eggIntervalMs) return;
+
+        List<Enemy> alive = getAllEnemies();
+        if (alive.isEmpty()) return;
+
+        lastEggTime = now;
+        Enemy shooter = alive.get((int) (Math.random() * alive.size()));
+        eggs.add(new Egg(shooter.getX() + 15, shooter.getY() + 30));
     }
 
     public List<Enemy> getAllEnemies() {
@@ -68,6 +89,10 @@ public class Grid {
             }
         }
         return result;
+    }
+
+    public List<Egg> getEggs() {
+        return eggs;
     }
 
     public boolean isStageComplete() {
@@ -82,6 +107,9 @@ public class Grid {
     public void draw(Graphics g) {
         for (Enemy en : getAllEnemies()) {
             en.draw(g);
+        }
+        for (Egg egg : eggs) {
+            egg.draw(g);
         }
     }
 }
