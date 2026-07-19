@@ -6,7 +6,7 @@ import java.io.IOException;
 public class ShooterEnemy extends Enemy {
     private static Image sharedImage;
     static {
-        try { sharedImage = ImageIO.read(new File("assets/enemy/shooter.png")); }
+        try { sharedImage = ImageIO.read(new File("assets/chicken/shooter_chicken.png")); }
         catch (IOException e) { sharedImage = null; }
     }
 

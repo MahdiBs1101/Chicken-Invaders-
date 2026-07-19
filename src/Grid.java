@@ -10,7 +10,8 @@ public class Grid {
 
     private Cell[][] cells = new Cell[ROWS][COLS];
 
-    private int gridX, gridY;
+    private double gridX;
+    private int gridY;
     private int direction = 1;
     private double horizontalSpeed;
     private int verticalStep;
@@ -20,20 +21,78 @@ public class Grid {
     private long eggIntervalMs;
     private long lastEggTime = 0;
 
-    public Grid(int startX, int startY, double horizontalSpeed, int verticalStep,
-                int initialHitsPerCell, int panelWidth, long eggIntervalMs) {
+    public Grid(int startX, int startY, int panelWidth, int stageNumber) {
         this.gridX = startX;
         this.gridY = startY;
-        this.horizontalSpeed = horizontalSpeed;
-        this.verticalStep = verticalStep;
         this.panelWidth = panelWidth;
-        this.eggIntervalMs = eggIntervalMs;
+
+        applyStageConfig(stageNumber);
+        buildGrid(stageNumber);
+    }
+
+    private void applyStageConfig(int stage) {
+        switch (stage) {
+            case 1: horizontalSpeed = 0; verticalStep = 20; eggIntervalMs = 3000; break;
+            case 2: horizontalSpeed = 0; verticalStep = 20; eggIntervalMs = 2000; break;
+            case 3: horizontalSpeed = 0; verticalStep = 25; eggIntervalMs = 1500; break;
+            case 5: horizontalSpeed = 0; verticalStep = 25; eggIntervalMs = 1000; break;
+            case 6: horizontalSpeed = 0; verticalStep = 30; eggIntervalMs = 800; break;
+            case 7: horizontalSpeed = 0; verticalStep = 30; eggIntervalMs = 700; break;
+            default: horizontalSpeed = 1.0; verticalStep = 20; eggIntervalMs = 3000;
+        }
+    }
+
+    private int cellSpawnCounterFor(int stage) {
+        switch (stage) {
+            case 1: case 2: return 2;
+            case 3: case 5: return 3;
+            case 6: case 7: return 4;
+            default: return 2;
+        }
+    }
+
+    private int hitsFor(Cell.EnemyType type, int stage) {
+        boolean earlyStages = stage <= 3;
+        switch (type) {
+            case NORMAL:  return earlyStages ? 2 : 3;
+            case FAST:    return earlyStages ? 1 : 2;
+            case ZIGZAG:  return earlyStages ? 2 : 3;
+            case SHOOTER: return earlyStages ? 2 : 3;
+            default: return 2;
+        }
+    }
+
+    private Cell.EnemyType pickTypeForCell(int row, int col, int stage) {
+        switch (stage) {
+            case 1:
+                return Cell.EnemyType.NORMAL;
+            case 2:
+                return (row % 2 == 0) ? Cell.EnemyType.NORMAL : Cell.EnemyType.FAST;
+            case 3:
+                return (row % 2 == 0) ? Cell.EnemyType.NORMAL : Cell.EnemyType.ZIGZAG;
+            case 5:
+                return (row % 2 == 0) ? Cell.EnemyType.SHOOTER : Cell.EnemyType.FAST;
+            case 6:
+                return (row % 2 == 0) ? Cell.EnemyType.ZIGZAG : Cell.EnemyType.SHOOTER;
+            case 7:
+                Cell.EnemyType[] all = Cell.EnemyType.values();
+                return all[row % all.length];
+            default:
+                return Cell.EnemyType.NORMAL;
+        }
+    }
+
+    private void buildGrid(int stage) {
+        int spawnCounter = cellSpawnCounterFor(stage);
 
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
-                Cell cell = new Cell(r, c, Cell.EnemyType.NORMAL, initialHitsPerCell, 2);
+                Cell.EnemyType type = pickTypeForCell(r, c, stage);
+                int hits = hitsFor(type, stage);
+
+                Cell cell = new Cell(r, c, type, spawnCounter, hits);
                 cells[r][c] = cell;
-                cell.spawnAt(gridX + c * SPACING_X, gridY + r * SPACING_Y);
+                cell.spawnAt((int) (gridX + c * SPACING_X), gridY + r * SPACING_Y);
             }
         }
     }
@@ -55,9 +114,9 @@ public class Grid {
                 }
 
                 if (cell.needsRespawn()) {
-                    cell.spawnAt(gridX + c * SPACING_X, gridY + r * SPACING_Y);
+                    cell.spawnAt((int) (gridX + c * SPACING_X), gridY + r * SPACING_Y);
                 } else if (en != null) {
-                    en.setX(gridX + c * SPACING_X);
+                    en.setX((int) (gridX + c * SPACING_X));
                     en.setY(gridY + r * SPACING_Y);
                 }
             }
@@ -65,7 +124,7 @@ public class Grid {
 
         layEggIfDue();
         eggs.forEach(Egg::update);
-        eggs.removeIf(egg -> !egg.isActive() || egg.isOffScreen(panelHeight));
+        eggs.removeIf(egg -> !egg.isActive() || egg.isOffScreen(panelWidth, panelHeight));
     }
 
     private void layEggIfDue() {

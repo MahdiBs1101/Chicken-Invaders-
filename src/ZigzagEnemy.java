@@ -6,7 +6,7 @@ import java.io.IOException;
 public class ZigzagEnemy extends Enemy {
     private static Image sharedImage;
     static {
-        try { sharedImage = ImageIO.read(new File("assets/enemy/zigzag.png")); }
+        try { sharedImage = ImageIO.read(new File("assets/chicken/zigzag_chicken.png")); }
         catch (IOException e) { sharedImage = null; }
     }
 

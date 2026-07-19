@@ -1,39 +1,41 @@
 import java.awt.*;
 
 public class Egg {
-    private int x, y;
+    private double x, y;
     private int width = 10, height = 16;
-    private int speed = 4;
+    private double vx, vy;
     private boolean active = true;
 
     public Egg(int x, int y) {
+        this(x, y, 0, 4);
+    }
+
+    public Egg(int x, int y, double vx, double vy) {
         this.x = x;
         this.y = y;
+        this.vx = vx;
+        this.vy = vy;
     }
 
     public void update() {
-        y += speed;
+        x += vx;
+        y += vy;
     }
 
     public void draw(Graphics g) {
         if (!active) return;
         g.setColor(Color.YELLOW.darker());
-        g.fillOval(x, y, width, height);
+        g.fillOval((int) x, (int) y, width, height);
     }
 
-    public boolean isActive() {
-        return active;
-    }
+    public boolean isActive() { return active; }
+    public void deactivate() { active = false; }
 
-    public void deactivate() {
-        active = false;
-    }
-
-    public boolean isOffScreen(int panelHeight) {
-        return y > panelHeight;
+    public boolean isOffScreen(int panelWidth, int panelHeight) {
+        return y > panelHeight || y < -20 || x < -20 || x > panelWidth + 20;
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle((int) x, (int) y, width, height);
     }
 }

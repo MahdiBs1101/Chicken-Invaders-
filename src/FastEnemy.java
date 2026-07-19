@@ -6,7 +6,7 @@ import java.io.IOException;
 public class FastEnemy extends Enemy {
     private static Image sharedImage;
     static {
-        try { sharedImage = ImageIO.read(new File("assets/enemy/fast.png")); }
+        try { sharedImage = ImageIO.read(new File("assets/chicken/fast_chicken.png")); }
         catch (IOException e) { sharedImage = null; }
     }
 
