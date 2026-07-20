@@ -11,10 +11,10 @@ public class BossLevel8 extends Boss {
     }
 
     private int direction = 1;
-    private double horizontalSpeed = 2.0;
+    private double horizontalSpeed = 5;
 
     public BossLevel8(int x, int y) {
-        super(x, y, 100, 1000, sharedImage);
+        super(x, y, 400, 1000, sharedImage);
     }
 
     @Override

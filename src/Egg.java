@@ -24,7 +24,7 @@ public class Egg {
 
     public void draw(Graphics g) {
         if (!active) return;
-        g.setColor(Color.YELLOW.darker());
+        g.setColor(Color.ORANGE.darker());
         g.fillOval((int) x, (int) y, width, height);
     }
 

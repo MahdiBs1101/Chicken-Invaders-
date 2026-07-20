@@ -19,11 +19,11 @@ public class PowerUp {
     private static final Map<String, Image> IMAGES = new HashMap<>();
 
     static {
-        loadImage(RAPID_FIRE, "assets/powerup1/fast_shot.png");
-        loadImage(FREEZE_BOMB, "assets/powerup1/freeze.png");
-        loadImage(EXTRA_LIFE, "assets/powerup1/heal.png");
-        loadImage(SHIELD, "assets/powerup1/sheild.png");
-        loadImage(ADD_FIRE, "assets/powerup1/add_shot.png");
+        loadImage(RAPID_FIRE, "assets/powerup2/fast_shot.png");
+        loadImage(FREEZE_BOMB, "assets/powerup2/freeze.png");
+        loadImage(EXTRA_LIFE, "assets/powerup2/heal.png");
+        loadImage(SHIELD, "assets/powerup2/sheild.png");
+        loadImage(ADD_FIRE, "assets/powerup2/add_shot.png");
     }
 
     private static void loadImage(String type, String path) {
@@ -36,7 +36,7 @@ public class PowerUp {
     }
 
     private int x, y;
-    private int width = 24, height = 24;
+    private int width = 28, height = 28;
     private int speed = 2;
     private String type;
     private boolean active = true;

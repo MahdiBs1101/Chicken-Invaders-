@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
     private static final String dbPath = "jdbc:sqlite:DataBase/game.db";
@@ -112,6 +114,30 @@ public class DatabaseManager {
         }
 
         updateHighScoreIfNeeded(username, score, level);
+    }
+
+    public List<HighScoreEntry> getHighScores() {
+        List<HighScoreEntry> result = new ArrayList<>();
+        String sql = "SELECT username, high_score, last_level FROM Users " +
+                "WHERE high_score > 0 ORDER BY high_score DESC LIMIT 20";
+
+        try (Connection conn = connect();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                result.add(new HighScoreEntry(
+                        rs.getString("username"),
+                        rs.getInt("high_score"),
+                        rs.getInt("last_level")
+                ));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error fetching high scores: " + e.getMessage());
+        }
+
+        return result;
     }
 
     private void updateHighScoreIfNeeded(String username, int score, int level) {

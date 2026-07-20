@@ -29,14 +29,16 @@ public class MainMenu extends JPanel {
         titleLabel.setForeground(Color.WHITE);
         add(titleLabel);
 
-        add(Box.createVerticalStrut(100));
+        add(Box.createVerticalStrut(70));
 
         JButton newGameButton = new JButton("New Game");
         JButton settingsButton = new JButton("Settings");
+        JButton highScoresButton = new JButton("High Scores");
+        JButton howToPlayButton = new JButton("How To Play");
         JButton exitButton = new JButton("Exit");
 
-        Dimension buttonSize = new Dimension(200, 40);
-        JButton[] buttons = {newGameButton, settingsButton, exitButton};
+        Dimension buttonSize = new Dimension(240, 40);
+        JButton[] buttons = {newGameButton, highScoresButton, howToPlayButton, settingsButton, exitButton};
         for (JButton btn : buttons) {
             btn.setMaximumSize(buttonSize);
             btn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -49,12 +51,24 @@ public class MainMenu extends JPanel {
 
         add(newGameButton);
         add(Box.createVerticalStrut(20));
+        add(highScoresButton);
+        add(Box.createVerticalStrut(20));
+        add(howToPlayButton);
+        add(Box.createVerticalStrut(20));
         add(settingsButton);
         add(Box.createVerticalStrut(20));
         add(exitButton);
 
         newGameButton.addActionListener(e -> {
             gameMain.startNewGame();
+        });
+
+        highScoresButton.addActionListener(e -> {
+            gameMain.showHighScores();
+        });
+
+        howToPlayButton.addActionListener(e -> {
+            gameMain.switchPanel("HowToPlay");
         });
 
         settingsButton.addActionListener(e -> {

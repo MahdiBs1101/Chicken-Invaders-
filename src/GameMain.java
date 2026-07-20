@@ -6,6 +6,7 @@ public class GameMain {
     private JPanel cardPanel;
     private CardLayout cardLayout;
     private GamePanel gamePanel;
+    private HighScorePanel highScorePanel;
 
     public String currentUsername;
 
@@ -31,6 +32,12 @@ public class GameMain {
         SettingsPanel settingsPanel = new SettingsPanel(this);
         cardPanel.add(settingsPanel, "Settings");
 
+        highScorePanel = new HighScorePanel(this);
+        cardPanel.add(highScorePanel, "HighScores");
+
+        HowToPlayPanel howToPlayPanel = new HowToPlayPanel(this);
+        cardPanel.add(howToPlayPanel, "HowToPlay");
+
         frame.add(cardPanel);
         frame.setVisible(true);
     }
@@ -43,6 +50,11 @@ public class GameMain {
         gamePanel.resetGame();
         switchPanel("GamePanel");
         gamePanel.requestFocusInWindow();
+    }
+
+    public void showHighScores() {
+        highScorePanel.refresh();
+        switchPanel("HighScores");
     }
 
 }
