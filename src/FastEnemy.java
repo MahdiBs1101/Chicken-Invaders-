@@ -4,18 +4,25 @@ import java.io.File;
 import java.io.IOException;
 
 public class FastEnemy extends Enemy {
-    private static Image sharedImage;
-    static {
-        try { sharedImage = ImageIO.read(new File("assets/chicken/fast_chicken.png")); }
-        catch (IOException e) { sharedImage = null; }
+    public FastEnemy(int x, int y, int hitsRequired) {
+        super(x, y, 2, hitsRequired, 15, loadSharedImage());
+        this.spawnSpeed = 8.0;
     }
 
-    public FastEnemy(int x, int y, int hitsRequired) {
-        super(x, y, 2, hitsRequired, 15, sharedImage);
+    private static Image sharedImage;
+    private static Image loadSharedImage() {
+        if (sharedImage == null) {
+            try {
+                sharedImage = javax.imageio.ImageIO.read(
+                        new java.io.File("assets/chicken/fast_chicken.png"));
+            } catch (Exception e) {
+                System.out.println("Error loading fast chicken image: " + e.getMessage());
+            }
+        }
+        return sharedImage;
     }
 
     @Override
     public void move() {
-        x += speed;
     }
 }

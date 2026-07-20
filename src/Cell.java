@@ -16,11 +16,26 @@ public class Cell {
     }
 
     public void spawnAt(int x, int y) {
+        currentEnemy = createEnemy(x, y);
+    }
+
+    public void respawnFromCorner(int targetX, int targetY, int panelWidth) {
+        boolean fromLeft = Math.random() < 0.5;
+        int startX = fromLeft ? -40 : panelWidth;
+        int startY = -40;
+
+        Enemy enemy = createEnemy(startX, startY);
+        enemy.startSpawn(startX, startY, targetX, targetY);
+        currentEnemy = enemy;
+    }
+
+    private Enemy createEnemy(int x, int y) {
         switch (type) {
-            case NORMAL:  currentEnemy = new NormalEnemy(x, y, hitsPerEnemy); break;
-            case FAST:    currentEnemy = new FastEnemy(x, y, hitsPerEnemy); break;
-            case ZIGZAG:  currentEnemy = new ZigzagEnemy(x, y, hitsPerEnemy); break;
-            case SHOOTER: currentEnemy = new ShooterEnemy(x, y, hitsPerEnemy); break;
+            case NORMAL:  return new NormalEnemy(x, y, hitsPerEnemy);
+            case FAST:    return new FastEnemy(x, y, hitsPerEnemy);
+            case ZIGZAG:  return new ZigzagEnemy(x, y, hitsPerEnemy);
+            case SHOOTER: return new ShooterEnemy(x, y, hitsPerEnemy);
+            default:      return new NormalEnemy(x, y, hitsPerEnemy);
         }
     }
 
@@ -37,7 +52,7 @@ public class Cell {
         return spawnsRemaining <= 0 && currentEnemy == null;
     }
 
-    public int getRow() { return row; }
-    public int getCol() { return col; }
-    public Enemy getCurrentEnemy() { return currentEnemy; }
+    public Enemy getCurrentEnemy() {
+        return currentEnemy;
+    }
 }

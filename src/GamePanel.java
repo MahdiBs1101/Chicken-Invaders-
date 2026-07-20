@@ -148,7 +148,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         boolean frozen = System.currentTimeMillis() < freezeUntil;
 
         if (grid != null) {
-            if (!frozen) grid.update(getHeight());
+            if (!frozen) {
+                boolean enemyEscaped = grid.update(getHeight(), plane.getX(), plane.getY());
+                if (enemyEscaped) {
+                    plane.loseLife();
+                    SoundManager.get().playCrash();
+                }
+            }
             checkBulletEnemyCollisions();
             checkEggPlaneCollisions(grid.getEggs());
             checkPowerUpCollisions();

@@ -10,6 +10,10 @@ public abstract class Enemy {
     protected int scoreValue;
     protected boolean alive = true;
 
+    protected boolean spawning = false;
+    protected int targetX, targetY;
+    protected double spawnSpeed = 4.0;
+
     public Enemy(int x, int y, int speed, int hitsRequired, int scoreValue, Image image) {
         this.x = x;
         this.y = y;
@@ -20,12 +24,41 @@ public abstract class Enemy {
     }
 
     public abstract void move();
+    public void maybeShoot(java.util.List<Egg> eggs, int planeX, int planeY) {
+    }
 
     public void takeHit() {
         hitsRequired--;
         if (hitsRequired <= 0) {
             alive = false;
         }
+    }
+
+    public void startSpawn(int startX, int startY, int targetX, int targetY) {
+        this.x = startX;
+        this.y = startY;
+        this.targetX = targetX;
+        this.targetY = targetY;
+        this.spawning = true;
+    }
+
+    public void updateSpawnMovement() {
+        if (!spawning) return;
+        double dx = targetX - x;
+        double dy = targetY - y;
+        double dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < spawnSpeed) {
+            x = targetX;
+            y = targetY;
+            spawning = false;
+        } else {
+            x += (int) Math.round(spawnSpeed * dx / dist);
+            y += (int) Math.round(spawnSpeed * dy / dist);
+        }
+    }
+
+    public boolean isSpawning() {
+        return spawning;
     }
 
     public void draw(Graphics g) {

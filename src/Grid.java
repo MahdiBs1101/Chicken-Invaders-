@@ -99,12 +99,14 @@ public class Grid {
         }
     }
 
-    public void update(int panelHeight) {
+    public boolean update(int panelHeight, int planeX, int planeY) {
         gridX += direction * horizontalSpeed;
         if (gridX <= 0 || gridX + (COLS - 1) * SPACING_X + 40 >= panelWidth) {
             direction *= -1;
             gridY += verticalStep;
         }
+
+        boolean enemyReachedBottom = false;
 
         for (int r = 0; r < ROWS; r++) {
             for (int c = 0; c < COLS; c++) {
@@ -119,10 +121,19 @@ public class Grid {
                 }
 
                 if (cell.needsRespawn()) {
-                    cell.spawnAt((int) (gridX + c * SPACING_X), gridY + r * SPACING_Y);
+                    cell.respawnFromCorner((int) (gridX + c * SPACING_X), gridY + r * SPACING_Y, panelWidth);
                 } else if (en != null) {
-                    en.setX((int) (gridX + c * SPACING_X));
-                    en.setY(gridY + r * SPACING_Y);
+                    if (en.isSpawning()) {
+                        en.updateSpawnMovement();
+                    } else {
+                        en.setX((int) (gridX + c * SPACING_X));
+                        en.setY(gridY + r * SPACING_Y);
+                    }
+                    en.maybeShoot(eggs, planeX, planeY);
+                    if (en.isAlive() && en.getY() > panelHeight) {
+                        enemyReachedBottom = true;
+                        cell.notifyEnemyDied();
+                    }
                 }
             }
         }
@@ -133,6 +144,8 @@ public class Grid {
 
         powerUps.forEach(PowerUp::update);
         powerUps.removeIf(p -> !p.isActive() || p.isOffScreen(panelHeight));
+
+        return enemyReachedBottom;
     }
 
     private String randomPowerUpType() {
