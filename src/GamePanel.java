@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private Timer timer;
@@ -20,6 +21,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private boolean stageTransitioning = false;
     private long stageCompleteTime = 0;
     private static final long STAGE_TRANSITION_DELAY_MS = 2000;
+
+    private long freezeUntil = 0;
 
     public GamePanel(GameMain gameMain) {
         this.gameMain = gameMain;
@@ -126,10 +129,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 
         plane.update(getHeight());
 
+        boolean frozen = System.currentTimeMillis() < freezeUntil;
+
         if (grid != null) {
-            grid.update(getHeight());
+            if (!frozen) grid.update(getHeight());
             checkBulletEnemyCollisions();
             checkEggPlaneCollisions(grid.getEggs());
+            checkPowerUpCollisions();
 
             if (grid.isStageComplete()) {
                 stageTransitioning = true;
@@ -138,7 +144,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
 
         if (boss != null) {
-            boss.update(getWidth(), getHeight());
+            if (!frozen) boss.update(getWidth(), getHeight());
             checkBulletBossCollisions();
             checkEggPlaneCollisions(boss.getEggs());
 
@@ -155,6 +161,37 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
 
         repaint();
+    }
+
+    private void checkPowerUpCollisions() {
+        if (grid == null) return;
+        for (PowerUp p : grid.getPowerUps()) {
+            if (!p.isActive()) continue;
+            if (p.getBounds().intersects(plane.getBounds())) {
+                applyPowerUp(p.getType());
+                p.deactivate();
+            }
+        }
+    }
+
+    private void applyPowerUp(String type) {
+        switch (type) {
+            case PowerUp.RAPID_FIRE:
+                plane.activateRapidFire(8000);
+                break;
+            case PowerUp.FREEZE_BOMB:
+                freezeUntil = System.currentTimeMillis() + 3000;
+                break;
+            case PowerUp.EXTRA_LIFE:
+                plane.addLife();
+                break;
+            case PowerUp.SHIELD:
+                plane.activateShield(10000);
+                break;
+            case PowerUp.ADD_FIRE:
+                plane.addBulletSlot();
+                break;
+        }
     }
 
     private void handleStageTransition() {
@@ -201,11 +238,13 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    private void checkEggPlaneCollisions(java.util.List<Egg> eggs) {
+    private void checkEggPlaneCollisions(List<Egg> eggs) {
         for (Egg egg : eggs) {
             if (!egg.isActive()) continue;
             if (egg.getBounds().intersects(plane.getBounds())) {
-                plane.loseLife();
+                if (!plane.hasShield()) {
+                    plane.loseLife();
+                }
                 egg.deactivate();
             }
         }

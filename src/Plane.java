@@ -11,11 +11,19 @@ public abstract class Plane {
 
     protected int speed;
     protected int fireRateMs;
+    protected int baseFireRateMs;
     protected int lives;
     protected static final int MAX_LIVES = 5;
+    private static final int MAX_BULLET_SLOTS = 5;
 
     private long lastShotTime = 0;
     private int bulletCount = 1;
+
+    private boolean shieldActive = false;
+    private long shieldEndTime = 0;
+
+    private boolean rapidFireActive = false;
+    private long rapidFireEndTime = 0;
 
     private Image image;
     private List<Bullet> bullets = new ArrayList<>();
@@ -25,6 +33,7 @@ public abstract class Plane {
         this.y = startY;
         this.speed = speed;
         this.fireRateMs = fireRateMs;
+        this.baseFireRateMs = fireRateMs;
         this.lives = initialLives;
         try {
             image = ImageIO.read(new File(imagePath));
@@ -58,6 +67,16 @@ public abstract class Plane {
     }
 
     public void update(int panelHeight) {
+        long now = System.currentTimeMillis();
+
+        if (shieldActive && now > shieldEndTime) {
+            shieldActive = false;
+        }
+        if (rapidFireActive && now > rapidFireEndTime) {
+            rapidFireActive = false;
+            fireRateMs = baseFireRateMs;
+        }
+
         bullets.forEach(Bullet::update);
         bullets.removeIf(b -> b.getY() < 0 || !b.isActive());
     }
@@ -66,9 +85,28 @@ public abstract class Plane {
         if (image != null) {
             g.drawImage(image, x, y, width, height, null);
         }
+        if (shieldActive) {
+            g.setColor(Color.CYAN);
+            g.drawOval(x - 5, y - 5, width + 10, height + 10);
+        }
         for (Bullet b : bullets) {
             b.draw(g);
         }
+    }
+
+    public void activateShield(long durationMs) {
+        shieldActive = true;
+        shieldEndTime = System.currentTimeMillis() + durationMs;
+    }
+
+    public boolean hasShield() {
+        return shieldActive;
+    }
+
+    public void activateRapidFire(long durationMs) {
+        rapidFireActive = true;
+        rapidFireEndTime = System.currentTimeMillis() + durationMs;
+        fireRateMs = baseFireRateMs / 3;
     }
 
     public void loseLife() {
@@ -80,7 +118,9 @@ public abstract class Plane {
     }
 
     public void addBulletSlot() {
-        bulletCount++;
+        if (bulletCount < MAX_BULLET_SLOTS) {
+            bulletCount++;
+        }
     }
 
     public void setFireRateMs(int fireRateMs) {

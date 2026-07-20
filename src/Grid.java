@@ -21,6 +21,8 @@ public class Grid {
     private long eggIntervalMs;
     private long lastEggTime = 0;
 
+    private List<PowerUp> powerUps = new ArrayList<>();
+
     public Grid(int startX, int startY, int panelWidth, int stageNumber) {
         this.gridX = startX;
         this.gridY = startY;
@@ -32,12 +34,12 @@ public class Grid {
 
     private void applyStageConfig(int stage) {
         switch (stage) {
-            case 1: horizontalSpeed = 0; verticalStep = 20; eggIntervalMs = 3000; break;
-            case 2: horizontalSpeed = 0; verticalStep = 20; eggIntervalMs = 2000; break;
-            case 3: horizontalSpeed = 0; verticalStep = 25; eggIntervalMs = 1500; break;
-            case 5: horizontalSpeed = 0; verticalStep = 25; eggIntervalMs = 1000; break;
-            case 6: horizontalSpeed = 0; verticalStep = 30; eggIntervalMs = 800; break;
-            case 7: horizontalSpeed = 0; verticalStep = 30; eggIntervalMs = 700; break;
+            case 1: horizontalSpeed = 1.0; verticalStep = 20; eggIntervalMs = 3000; break;
+            case 2: horizontalSpeed = 1.5; verticalStep = 20; eggIntervalMs = 2000; break;
+            case 3: horizontalSpeed = 2.0; verticalStep = 25; eggIntervalMs = 1500; break;
+            case 5: horizontalSpeed = 2.5; verticalStep = 25; eggIntervalMs = 1000; break;
+            case 6: horizontalSpeed = 3.0; verticalStep = 30; eggIntervalMs = 800; break;
+            case 7: horizontalSpeed = 3.5; verticalStep = 30; eggIntervalMs = 700; break;
             default: horizontalSpeed = 1.0; verticalStep = 20; eggIntervalMs = 3000;
         }
     }
@@ -110,6 +112,9 @@ public class Grid {
                 Enemy en = cell.getCurrentEnemy();
 
                 if (en != null && !en.isAlive()) {
+                    if (Math.random() < 0.2) {
+                        powerUps.add(new PowerUp(en.getX(), en.getY(), randomPowerUpType()));
+                    }
                     cell.notifyEnemyDied();
                 }
 
@@ -125,6 +130,17 @@ public class Grid {
         layEggIfDue();
         eggs.forEach(Egg::update);
         eggs.removeIf(egg -> !egg.isActive() || egg.isOffScreen(panelWidth, panelHeight));
+
+        powerUps.forEach(PowerUp::update);
+        powerUps.removeIf(p -> !p.isActive() || p.isOffScreen(panelHeight));
+    }
+
+    private String randomPowerUpType() {
+        return PowerUp.randomType();
+    }
+
+    public List<PowerUp> getPowerUps() {
+        return powerUps;
     }
 
     private void layEggIfDue() {
@@ -169,6 +185,9 @@ public class Grid {
         }
         for (Egg egg : eggs) {
             egg.draw(g);
+        }
+        for (PowerUp p : powerUps) {
+            p.draw(g);
         }
     }
 }
