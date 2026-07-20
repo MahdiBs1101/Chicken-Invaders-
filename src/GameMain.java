@@ -25,6 +25,9 @@ public class GameMain {
         GamePanel gamePanel = new GamePanel(this);
         cardPanel.add(gamePanel, "GamePanel");
 
+        SettingsPanel settingsPanel = new SettingsPanel(this);
+        cardPanel.add(settingsPanel, "Settings");
+
         frame.add(cardPanel);
         frame.setVisible(true);
     }

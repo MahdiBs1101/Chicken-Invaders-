@@ -58,7 +58,7 @@ public class MainMenu extends JPanel {
         });
 
         settingsButton.addActionListener(e -> {
-            System.out.println("Go to Settings");
+            gameMain.switchPanel("Settings");
         });
 
         exitButton.addActionListener(e -> {

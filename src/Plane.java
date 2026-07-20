@@ -51,9 +51,9 @@ public abstract class Plane {
     public void moveUp(int panelHeight)   { if (y > 0) y -= speed; }
     public void moveDown(int panelHeight) { if (y < panelHeight - height) y += speed; }
 
-    public void shoot() {
+    public boolean shoot() {
         long now = System.currentTimeMillis();
-        if (now - lastShotTime < fireRateMs) return;
+        if (now - lastShotTime < fireRateMs) return false;
         lastShotTime = now;
 
         int centerX = x + width / 2;
@@ -64,6 +64,7 @@ public abstract class Plane {
             int bulletX = centerX + startOffset + i * spacing;
             bullets.add(new Bullet(bulletX, y, getDamageMultiplier()));
         }
+        return true;
     }
 
     public void update(int panelHeight) {

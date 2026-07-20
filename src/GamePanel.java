@@ -35,6 +35,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         plane = new DefaultPlane(375, 500);
         startStage(currentStage);
 
+        SoundManager.get().playMusic("assets/sound-effects/main_theme.wav");
+
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -125,7 +127,11 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         if (right) plane.moveRight(getWidth());
         if (up)    plane.moveUp(getHeight());
         if (down)  plane.moveDown(getHeight());
-        if (shooting) plane.shoot();
+        if (shooting) {
+            if (plane.shoot()) {
+                SoundManager.get().playShot();
+            }
+        }
 
         plane.update(getHeight());
 
@@ -213,6 +219,12 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         gameOver = true;
         victory = won;
         timer.stop();
+        SoundManager.get().stopMusic();
+        SoundManager.get().playGameOver();
+
+        if (won) {
+            SoundManager.get().playMusic("assets/sound-effects/ending-theme.wav");
+        }
     }
 
     private void checkBulletEnemyCollisions() {
@@ -222,6 +234,9 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 if (b.getBounds().intersects(en.getBounds())) {
                     en.takeHit();
                     b.deactivate();
+                    if (!en.isAlive()) {
+                        SoundManager.get().playCrash();
+                    }
                     break;
                 }
             }
@@ -244,6 +259,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             if (egg.getBounds().intersects(plane.getBounds())) {
                 if (!plane.hasShield()) {
                     plane.loseLife();
+                    SoundManager.get().playCrash();
                 }
                 egg.deactivate();
             }
