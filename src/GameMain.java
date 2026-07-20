@@ -5,6 +5,10 @@ public class GameMain {
     private JFrame frame;
     private JPanel cardPanel;
     private CardLayout cardLayout;
+    private GamePanel gamePanel;
+    private HighScorePanel highScorePanel;
+
+    public String currentUsername;
 
     public GameMain() {
         frame = new JFrame("Chicken Invaders");
@@ -22,12 +26,35 @@ public class GameMain {
         MainMenu mainMenu = new MainMenu(this);
         cardPanel.add(mainMenu, "MainMenu");
 
+        gamePanel = new GamePanel(this);
+        cardPanel.add(gamePanel, "GamePanel");
+
+        SettingsPanel settingsPanel = new SettingsPanel(this);
+        cardPanel.add(settingsPanel, "Settings");
+
+        highScorePanel = new HighScorePanel(this);
+        cardPanel.add(highScorePanel, "HighScores");
+
+        HowToPlayPanel howToPlayPanel = new HowToPlayPanel(this);
+        cardPanel.add(howToPlayPanel, "HowToPlay");
+
         frame.add(cardPanel);
         frame.setVisible(true);
     }
 
     public void switchPanel(String panelName) {
         cardLayout.show(cardPanel, panelName);
+    }
+
+    public void startNewGame() {
+        gamePanel.resetGame();
+        switchPanel("GamePanel");
+        gamePanel.requestFocusInWindow();
+    }
+
+    public void showHighScores() {
+        highScorePanel.refresh();
+        switchPanel("HighScores");
     }
 
 }
