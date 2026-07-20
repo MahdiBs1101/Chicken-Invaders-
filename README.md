@@ -1,2 +1,41 @@
-# Chicken-Invaders-
-A nostalgic clone of the classic Chicken Invaders game. Defend the Earth from intergalactic chickens!
+# Chicken Invaders - Java Edition
+
+## نام دانشجو
+مهدی باستانی
+
+### پیش‌نیازها
+- Java JDK 17 یا بالاتر
+- کتابخانه‌ی SQLite JDBC Driver (sqlite-jdbc) — باید در Class Path پروژه اضافه شده باشد
+- IntelliJ IDEA (یا هر IDE دیگری که از Java و Swing پشتیبانی کند)
+
+### نحوه‌ی اجرا
+1. پروژه را در IntelliJ IDEA باز کنید.
+2. مطمئن شوید پوشه‌ی `assets` (شامل تصاویر و صداها) در ریشه‌ی پروژه قرار دارد — مسیرهای بارگذاری فایل‌ها به‌صورت نسبی (`assets/...`) نوشته شده‌اند.
+3. فایل `Main.java` را اجرا کنید.
+
+اجرا از طریق ترمینال:
+```
+javac -cp .;lib/sqlite-jdbc.jar *.java
+java -cp .;lib/sqlite-jdbc.jar Main
+```
+
+## کنترل‌های بازی
+
+| کلید | عملکرد |
+|---|---|
+| → / D | حرکت به راست |
+| ← / A | حرکت به چپ |
+| ↑ / W | حرکت به بالا |
+| ↓ / S | حرکت به پایین |
+| Space | شلیک گلوله |
+| Esc | بازگشت به منوی اصلی |
+
+## پایگاه داده
+
+- **نوع:** SQLite
+- **مسیر فایل:** `DataBase/game.db`
+- **جداول:**
+    - **Users**: اطلاعات کاربران شامل نام کاربری، رمز عبور، بالاترین امتیاز، آخرین سطح رسیده، و تنظیمات صدا
+    - **History**: تاریخچه‌ی هر بازی شامل نام کاربری، امتیاز نهایی، آخرین سطح، تاریخ و زمان بازی، و تنظیمات صدای فعال در آن لحظه
+
+جدول High Scores از روی رکوردهای جدول `Users` (ستون `high_score`) استخراج و مرتب‌سازی می‌شود.
