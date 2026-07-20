@@ -136,6 +136,10 @@ public abstract class Plane {
         return new Rectangle(x, y, width, height);
     }
 
+    public boolean hasRapidFire() {
+        return rapidFireActive;
+    }
+
     public int getLives() { return lives; }
     public int getBulletCount() { return bulletCount; }
     public List<Bullet> getBullets() { return bullets; }

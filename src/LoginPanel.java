@@ -55,6 +55,7 @@ public class LoginPanel extends JPanel {
             }
 
             if (dbManager.validateLogin(user, pass)) {
+                gameMain.currentUsername = user;
                 JOptionPane.showMessageDialog(this,
                         "Login Successful! Welcome " + user, "Success", JOptionPane.INFORMATION_MESSAGE);
                 gameMain.switchPanel("MainMenu");

@@ -94,4 +94,50 @@ public class DatabaseManager {
             return false;
         }
     }
+
+    public void saveGameResult(String username, int score, int level, String activeSettings) {
+        String sql = "INSERT INTO History(username, final_score, last_level, active_settings) VALUES(?, ?, ?, ?)";
+
+        try (Connection conn = connect();
+             PreparedStatement st = conn.prepareStatement(sql)) {
+
+            st.setString(1, username);
+            st.setInt(2, score);
+            st.setInt(3, level);
+            st.setString(4, activeSettings);
+            st.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println("Error saving game result: " + e.getMessage());
+        }
+
+        updateHighScoreIfNeeded(username, score, level);
+    }
+
+    private void updateHighScoreIfNeeded(String username, int score, int level) {
+        String selectSql = "SELECT high_score FROM Users WHERE username = ?";
+
+        try (Connection conn = connect();
+             PreparedStatement st = conn.prepareStatement(selectSql)) {
+
+            st.setString(1, username);
+            ResultSet rs = st.executeQuery();
+
+            if (rs.next()) {
+                int currentHigh = rs.getInt("high_score");
+                if (score > currentHigh) {
+                    String updateSql = "UPDATE Users SET high_score = ?, last_level = ? WHERE username = ?";
+                    try (PreparedStatement upd = conn.prepareStatement(updateSql)) {
+                        upd.setInt(1, score);
+                        upd.setInt(2, level);
+                        upd.setString(3, username);
+                        upd.executeUpdate();
+                    }
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error updating high score: " + e.getMessage());
+        }
+    }
 }

@@ -5,6 +5,9 @@ public class GameMain {
     private JFrame frame;
     private JPanel cardPanel;
     private CardLayout cardLayout;
+    private GamePanel gamePanel;
+
+    public String currentUsername;
 
     public GameMain() {
         frame = new JFrame("Chicken Invaders");
@@ -22,7 +25,7 @@ public class GameMain {
         MainMenu mainMenu = new MainMenu(this);
         cardPanel.add(mainMenu, "MainMenu");
 
-        GamePanel gamePanel = new GamePanel(this);
+        gamePanel = new GamePanel(this);
         cardPanel.add(gamePanel, "GamePanel");
 
         SettingsPanel settingsPanel = new SettingsPanel(this);
@@ -34,6 +37,12 @@ public class GameMain {
 
     public void switchPanel(String panelName) {
         cardLayout.show(cardPanel, panelName);
+    }
+
+    public void startNewGame() {
+        gamePanel.resetGame();
+        switchPanel("GamePanel");
+        gamePanel.requestFocusInWindow();
     }
 
 }

@@ -16,6 +16,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
     private boolean up, down, left, right, shooting;
     private boolean gameOver = false;
     private boolean victory = false;
+    private int score = 0;
 
     private int currentStage = 1;
     private boolean stageTransitioning = false;
@@ -87,8 +88,17 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         if (boss != null) boss.draw(g);
 
         g.setColor(Color.WHITE);
-        g.drawString("Lives: " + plane.getLives() + "   Bullets: " + plane.getBulletCount()
-                + "   Stage: " + currentStage, 20, 20);
+        g.setFont(new Font("Arial", Font.PLAIN, 16));
+
+        String username = (gameMain.currentUsername != null) ? gameMain.currentUsername : "Guest";
+
+        g.drawString("Player: " + username, 20, 20);
+        g.drawString("Score: " + score, 20, 40);
+        g.drawString("Stage: " + currentStage, 20, 60);
+        g.drawString("Lives: " + plane.getLives(), 20, 80);
+        g.drawString("Bullets: " + plane.getBulletCount(), 20, 100);
+
+        drawActivePowerUpIndicators(g);
 
         if (stageTransitioning && !victory) {
             g.setFont(new Font("Arial", Font.BOLD, 30));
@@ -144,6 +154,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             checkPowerUpCollisions();
 
             if (grid.isStageComplete()) {
+                score += 200;
                 stageTransitioning = true;
                 stageCompleteTime = System.currentTimeMillis();
             }
@@ -155,6 +166,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
             checkEggPlaneCollisions(boss.getEggs());
 
             if (boss.isDead()) {
+                score += (currentStage == 8) ? 1000 : 500;
                 stageTransitioning = true;
                 stageCompleteTime = System.currentTimeMillis();
             }
@@ -225,6 +237,20 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
         if (won) {
             SoundManager.get().playMusic("assets/sound-effects/ending-theme.wav");
         }
+
+        saveResultToDatabase();
+    }
+
+    private void saveResultToDatabase() {
+        String username = gameMain.currentUsername;
+        if (username == null) return;
+
+        String settingsStr = "music:" + (SettingsPanel.musicOn ? 1 : 0)
+                + ",shot:" + (SettingsPanel.shotOn ? 1 : 0)
+                + ",crash:" + (SettingsPanel.crashOn ? 1 : 0)
+                + ",gameover:" + (SettingsPanel.gameOverOn ? 1 : 0);
+
+        DatabaseManager.db().saveGameResult(username, score, currentStage, settingsStr);
     }
 
     private void checkBulletEnemyCollisions() {
@@ -235,6 +261,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                     en.takeHit();
                     b.deactivate();
                     if (!en.isAlive()) {
+                        score += en.getScoreValue();
                         SoundManager.get().playCrash();
                     }
                     break;
@@ -263,6 +290,43 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
                 }
                 egg.deactivate();
             }
+        }
+    }
+
+    public void resetGame() {
+        plane = new DefaultPlane(375, 500);
+        currentStage = 1;
+        startStage(currentStage);
+
+        score = 0;
+        gameOver = false;
+        victory = false;
+        stageTransitioning = false;
+        stageCompleteTime = 0;
+        freezeUntil = 0;
+
+        up = down = left = right = shooting = false;
+
+        timer.stop();
+        timer.start();
+
+        SoundManager.get().playMusic("assets/sound-effects/main_theme.wav");
+    }
+
+    private void drawActivePowerUpIndicators(Graphics g) {
+        int indicatorY = 120;
+        g.setFont(new Font("Arial", Font.BOLD, 14));
+
+        if (plane.hasShield()) {
+            g.setColor(Color.CYAN);
+            g.drawString("🛡 Shield Active", 20, indicatorY);
+            indicatorY += 20;
+        }
+
+        if (plane.hasRapidFire()) {
+            g.setColor(Color.ORANGE);
+            g.drawString("⚡ Rapid Fire Active", 20, indicatorY);
+            indicatorY += 20;
         }
     }
 

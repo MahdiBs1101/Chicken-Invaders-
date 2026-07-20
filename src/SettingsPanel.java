@@ -30,7 +30,15 @@ public class SettingsPanel extends JPanel {
         JCheckBox crashBox = createCheckBox("Crash / Explosion Sound", crashOn);
         JCheckBox gameOverBox = createCheckBox("Game Over / Win Sound", gameOverOn);
 
-        musicBox.addActionListener(e -> musicOn = musicBox.isSelected());
+        musicBox.addActionListener(e -> {
+            musicOn = musicBox.isSelected();
+            if (musicOn) {
+                SoundManager.get().playMusic("assets/sound-effects/main_theme.wav");
+            } else {
+                SoundManager.get().stopMusic();
+            }
+        });
+
         shotBox.addActionListener(e -> shotOn = shotBox.isSelected());
         crashBox.addActionListener(e -> crashOn = crashBox.isSelected());
         gameOverBox.addActionListener(e -> gameOverOn = gameOverBox.isSelected());
